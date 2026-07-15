@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8fc91197d78640419e73860585887bb, type: 3}
+  m_Name: KOPAG
+  m_EditorClassIdentifier: Assembly-CSharp::CardData
+  cardName: KOPAG (Nongkrong & Ngopi)
+  description: Ngopi dengan alasan rehat sejenak demi kewarasan otak.
+  staminaCost: 1
+  cardType: 1
+  effectValue: 10
+  cardArt: {fileID: 974287717451959001, guid: d60a703088ecaf048abff6e9ab430744, type: 3}
