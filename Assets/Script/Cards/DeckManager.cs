@@ -55,7 +55,7 @@ public class DeckManager : MonoBehaviour
 
             CardData card = drawPile[0];
             drawPile.RemoveAt(0);
-            handPile.Add(card);  
+            handPile.Add(card);
             drawnCards.Add(card);
         }
 
@@ -75,5 +75,16 @@ public class DeckManager : MonoBehaviour
     {
         discardPile.AddRange(handPile);
         handPile.Clear();
+    }
+
+    public List<CardData> DiscardHandAndRedraw()
+    {
+        int currentHandCount = handPile.Count;
+
+        DiscardHand();
+
+        Debug.Log($"[Ganti Judul] Membuang {currentHandCount} kartu. Menarik kartu baru...");
+
+        return DrawCards(currentHandCount);
     }
 }

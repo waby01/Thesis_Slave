@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class BattleManager : MonoBehaviour
@@ -8,6 +9,7 @@ public class BattleManager : MonoBehaviour
 
     [Header("Linked Managers")]
     public DeckManager deckManager;
+    public SlotCard slotCardVisual;
 
     [Header("Player Stats")]
     public int maxMentalHealth = 100;
@@ -68,7 +70,16 @@ public class BattleManager : MonoBehaviour
     {
         currentStamina = maxStamina;
 
-        deckManager.DrawCards(4);
+        List<CardData> drawnCards = deckManager.DrawCards(4);
+
+        if (slotCardVisual != null)
+        {
+            slotCardVisual.RefreshHandVisuals(drawnCards);
+        }
+        else
+        {
+            Debug.LogError("SlotCard belum di-drag ke Inspector BattleManager, bre!");
+        }
 
         Debug.Log("Giliran Player Dimulai! Silakan mainkan kartumu, bre.");
     }
@@ -91,6 +102,11 @@ public class BattleManager : MonoBehaviour
         else
         {
             deckManager.DiscardHand();
+            if (slotCardVisual != null)
+            {
+                slotCardVisual.RefreshHandVisuals(new List<CardData>());
+            }
+
             ChangeState(BattleState.PlayerTurn);
         }
     }

@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Draf Bab 4-5
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
   enemyName: Draf Bab 4-5 (Analisis & Pembahasan)
-  maxRevisiBar: 70
-  baseDamage: 10
+  maxRevisiBar: 125
+  baseDamage: 12
   enemySprite: {fileID: 0}

@@ -10,11 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b8fc91197d78640419e73860585887bb, type: 3}
-  m_Name: SKS
+  m_Name: PINJEM LAPTOP
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  cardName: 'SKS (Sistem Kebut Semalam) '
-  description: Ngebut ngetik semalaman. Progres cepat, tapi melelahkan njirr.
+  cardName: PINJEM LAPTOP
+  description: Laptop sendiri mendadak bluescreen pas nge-render Unity, terpaksa
+    pinjam laptop spek dewa temen kosan.
   staminaCost: 2
   cardType: 0
-  effectValue: 12
-  cardArt: {fileID: 21300000, guid: 401da0d231e01074abfc4b0a1cd03d13, type: 3}
+  effectValue: 15
+  cardArt: {fileID: 21300000, guid: 89186ea29e365ce498dc17dfbed2c022, type: 3}

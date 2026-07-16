@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Dosen Pembimbing
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
   enemyName: Dosbing Killer (Spesialis Coretan)
-  maxRevisiBar: 120
+  maxRevisiBar: 140
   baseDamage: 18
   enemySprite: {fileID: 0}
