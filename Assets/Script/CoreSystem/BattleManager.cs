@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class BattleManager : MonoBehaviour
 {
@@ -20,6 +21,16 @@ public class BattleManager : MonoBehaviour
     [Header("Active Enemy")]
     public EnemyData currentEnemyData;
     public int currentEnemyRevisiBar;
+
+    [Header("Enemy UI Elements")]
+    public TextMeshProUGUI enemyNameText;
+    public TextMeshProUGUI enemyRevisiText;
+
+    [Header("Player UI Elements")]
+    public TextMeshProUGUI playerMentalHealthText;
+    public TextMeshProUGUI playerStaminaText;
+
+    private List<CardData> cardsInHand = new List<CardData>();
 
     private void Start()
     {
@@ -50,7 +61,6 @@ public class BattleManager : MonoBehaviour
         }
     }
 
-    // 1. Persiapan Awal Pertarungan
     private void SetupBattle()
     {
         currentMentalHealth = maxMentalHealth;
@@ -62,7 +72,6 @@ public class BattleManager : MonoBehaviour
         }
 
         deckManager.SetupDeck();
-
         ChangeState(BattleState.PlayerTurn);
     }
 
@@ -70,18 +79,97 @@ public class BattleManager : MonoBehaviour
     {
         currentStamina = maxStamina;
 
-        List<CardData> drawnCards = deckManager.DrawCards(4);
+        cardsInHand = deckManager.DrawCards(4);
 
-        if (slotCardVisual != null)
+        UpdateHandUI();
+
+        Debug.Log($"Giliran Player! Stamina: {currentStamina}/3. Silakan mainkan kartumu, bre.");
+    }
+
+    public void PlayCard(CardData card)
+    {
+        if (currentState != BattleState.PlayerTurn)
         {
-            slotCardVisual.RefreshHandVisuals(drawnCards);
+            Debug.LogWarning("Bukan giliranmu, bre! Sabar, dosen lagi koreksi.");
+            return;
+        }
+
+        if (currentStamina < card.staminaCost)
+        {
+            Debug.LogWarning($"Stamina gak cukup buat mainin {card.cardName}! Butuh {card.staminaCost} Stamina.");
+            return;
+        }
+
+        currentStamina -= card.staminaCost;
+        Debug.Log($"Memainkan kartu: {card.cardName}. Stamina berkurang {card.staminaCost}. Sisa Stamina: {currentStamina}");
+
+        if (card.cardName == "GANTI JUDUL")
+        {
+            Debug.Log("Efek GANTI JUDUL aktif! Membuang semua kartu dan menarik ulang...");
+            cardsInHand = deckManager.DiscardHandAndRedraw();
         }
         else
         {
-            Debug.LogError("SlotCard belum di-drag ke Inspector BattleManager, bre!");
+            switch (card.cardType.ToString())
+            {
+                case "Damage":
+                    currentEnemyRevisiBar -= card.effectValue;
+                    if (currentEnemyRevisiBar < 0) currentEnemyRevisiBar = 0;
+                    Debug.Log($"Coretan Skripsi! Revisi Bar {currentEnemyData.enemyName} berkurang {card.effectValue}. Sisa: {currentEnemyRevisiBar}");
+                    break;
+
+                case "Heal":
+                    currentMentalHealth += card.effectValue;
+                    if (currentMentalHealth > maxMentalHealth) currentMentalHealth = maxMentalHealth;
+                    Debug.Log($"Healing! Mental Health bertambah {card.effectValue}. Sekarang: {currentMentalHealth}");
+                    break;
+
+                case "Draw":
+                    List<CardData> extraCards = deckManager.DrawCards(card.effectValue);
+                    cardsInHand.AddRange(extraCards);
+                    Debug.Log($"Efek Draw! Menarik {card.effectValue} kartu tambahan ke tangan.");
+                    break;
+
+                case "Stamina Buff":
+                    currentStamina += card.effectValue;
+                    Debug.Log($"Efek Stamina! Stamina bertambah {card.effectValue}. Sekarang: {currentStamina}");
+                    break;
+            }
+
+            deckManager.DiscardCard(card);
+            cardsInHand.Remove(card);
         }
 
-        Debug.Log("Giliran Player Dimulai! Silakan mainkan kartumu, bre.");
+        UpdateHandUI();
+
+        if (currentEnemyRevisiBar <= 0)
+        {
+            ChangeState(BattleState.Win);
+        }
+    }
+
+    private void UpdateHandUI()
+    {
+        if (slotCardVisual != null)
+        {
+            slotCardVisual.RefreshHandVisuals(cardsInHand);
+        }
+
+        if (currentEnemyData != null && enemyRevisiText != null)
+        {
+            if (enemyNameText != null) enemyNameText.text = currentEnemyData.enemyName;
+            enemyRevisiText.text = $"Revisi Bar: {currentEnemyRevisiBar} / {currentEnemyData.maxRevisiBar}";
+        }
+
+        if (playerMentalHealthText != null)
+        {
+            playerMentalHealthText.text = $"Mental Health: {currentMentalHealth} / {maxMentalHealth}";
+        }
+
+        if (playerStaminaText != null)
+        {
+            playerStaminaText.text = $"Stamina: {currentStamina} / {maxStamina}";
+        }
     }
 
     private IEnumerator ExecuteEnemyTurn()
@@ -89,7 +177,7 @@ public class BattleManager : MonoBehaviour
         Debug.Log("Dosen/Draf Skripsi sedang memeriksa...");
         yield return new WaitForSeconds(1.5f);
 
-        if (currentEnemyData != null)
+        if (currentEnemyData != null && currentEnemyRevisiBar > 0)
         {
             currentMentalHealth -= currentEnemyData.baseDamage;
             Debug.Log($"{currentEnemyData.enemyName} memberikan coretan! Mental Health berkurang {currentEnemyData.baseDamage}.");
@@ -102,10 +190,8 @@ public class BattleManager : MonoBehaviour
         else
         {
             deckManager.DiscardHand();
-            if (slotCardVisual != null)
-            {
-                slotCardVisual.RefreshHandVisuals(new List<CardData>());
-            }
+            cardsInHand.Clear();
+            UpdateHandUI();
 
             ChangeState(BattleState.PlayerTurn);
         }

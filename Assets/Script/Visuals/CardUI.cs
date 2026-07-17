@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 public class CardUI : MonoBehaviour
 {
-    [Header("UI Visual Elements")]
+    [Header("UI Elements")]
     public Image cardArtImage;
 
     private CardData assignedCardData;
@@ -11,10 +11,20 @@ public class CardUI : MonoBehaviour
     public void DisplayCard(CardData data)
     {
         assignedCardData = data;
-
-        if (assignedCardData != null && cardArtImage != null)
+        if (cardArtImage != null && data != null)
         {
-            cardArtImage.sprite = assignedCardData.cardArt;
+            cardArtImage.sprite = data.cardArt;
+        }
+    }
+
+    public void OnCardClicked()
+    {
+        if (assignedCardData == null) return;
+
+        BattleManager battleManager = Object.FindFirstObjectByType<BattleManager>();
+        if (battleManager != null)
+        {
+            battleManager.PlayCard(assignedCardData);
         }
     }
 }

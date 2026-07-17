@@ -130,6 +130,7 @@ GameObject:
   - component: {fileID: 114417450}
   - component: {fileID: 114417452}
   - component: {fileID: 114417451}
+  - component: {fileID: 114417453}
   m_Layer: 5
   m_Name: Slot_Panel
   m_TagString: Untagged
@@ -153,7 +154,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -15.367615, y: -302.96796}
+  m_AnchoredPosition: {x: -15.367676, y: -302.96802}
   m_SizeDelta: {x: -627.4792, y: -683.9635}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &114417451
@@ -169,7 +170,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.392}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -194,6 +195,32 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 114417449}
   m_CullTransparentMesh: 1
+--- !u!114 &114417453
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 114417449}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30649d3a9faa99c48a7b1166b86bf2a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.HorizontalLayoutGroup
+  m_Padding:
+    m_Left: 0
+    m_Right: 0
+    m_Top: 0
+    m_Bottom: 0
+  m_ChildAlignment: 4
+  m_Spacing: 30
+  m_ChildForceExpandWidth: 0
+  m_ChildForceExpandHeight: 0
+  m_ChildControlWidth: 1
+  m_ChildControlHeight: 1
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
+  m_ReverseArrangement: 0
 --- !u!1 &365068004
 GameObject:
   m_ObjectHideFlags: 0
@@ -778,6 +805,10 @@ MonoBehaviour:
   currentStamina: 0
   currentEnemyData: {fileID: 11400000, guid: d99a84dc6a14d0e4ca9f67177966f00e, type: 2}
   currentEnemyRevisiBar: 0
+  enemyNameText: {fileID: 0}
+  enemyRevisiText: {fileID: 0}
+  playerMentalHealthText: {fileID: 0}
+  playerStaminaText: {fileID: 0}
 --- !u!114 &2115252867
 MonoBehaviour:
   m_ObjectHideFlags: 0
