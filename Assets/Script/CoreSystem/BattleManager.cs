@@ -1,6 +1,7 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 public class BattleManager : MonoBehaviour
@@ -25,10 +26,14 @@ public class BattleManager : MonoBehaviour
     [Header("Enemy UI Elements")]
     public TextMeshProUGUI enemyNameText;
     public TextMeshProUGUI enemyRevisiText;
+    public Image enemyArtImage;
+    public TextMeshProUGUI enemyIntentText;
+    public Slider enemyRevisiSlider;
 
     [Header("Player UI Elements")]
     public TextMeshProUGUI playerMentalHealthText;
     public TextMeshProUGUI playerStaminaText;
+    public Slider playerMentalSlider;
 
     private List<CardData> cardsInHand = new List<CardData>();
 
@@ -69,6 +74,11 @@ public class BattleManager : MonoBehaviour
         if (currentEnemyData != null)
         {
             currentEnemyRevisiBar = currentEnemyData.maxRevisiBar;
+
+            if (enemyRevisiSlider != null) enemyRevisiSlider.maxValue = currentEnemyData.maxRevisiBar;
+            if (playerMentalSlider != null) playerMentalSlider.maxValue = maxMentalHealth;
+
+            if (enemyArtImage != null) enemyArtImage.sprite = currentEnemyData.enemySprite;
         }
 
         deckManager.SetupDeck();
@@ -78,34 +88,28 @@ public class BattleManager : MonoBehaviour
     private void StartPlayerTurn()
     {
         currentStamina = maxStamina;
-
         cardsInHand = deckManager.DrawCards(4);
 
         UpdateHandUI();
+        DisplayEnemyIntent();
 
         Debug.Log($"Giliran Player! Stamina: {currentStamina}/3. Silakan mainkan kartumu, bre.");
     }
 
     public void PlayCard(CardData card)
     {
-        if (currentState != BattleState.PlayerTurn)
-        {
-            Debug.LogWarning("Bukan giliranmu, bre! Sabar, dosen lagi koreksi.");
-            return;
-        }
+        if (currentState != BattleState.PlayerTurn) return;
 
         if (currentStamina < card.staminaCost)
         {
-            Debug.LogWarning($"Stamina gak cukup buat mainin {card.cardName}! Butuh {card.staminaCost} Stamina.");
+            Debug.LogWarning($"Stamina gak cukup!");
             return;
         }
 
         currentStamina -= card.staminaCost;
-        Debug.Log($"Memainkan kartu: {card.cardName}. Stamina berkurang {card.staminaCost}. Sisa Stamina: {currentStamina}");
 
         if (card.cardName == "GANTI JUDUL")
         {
-            Debug.Log("Efek GANTI JUDUL aktif! Membuang semua kartu dan menarik ulang...");
             cardsInHand = deckManager.DiscardHandAndRedraw();
         }
         else
@@ -115,24 +119,20 @@ public class BattleManager : MonoBehaviour
                 case "Damage":
                     currentEnemyRevisiBar -= card.effectValue;
                     if (currentEnemyRevisiBar < 0) currentEnemyRevisiBar = 0;
-                    Debug.Log($"Coretan Skripsi! Revisi Bar {currentEnemyData.enemyName} berkurang {card.effectValue}. Sisa: {currentEnemyRevisiBar}");
                     break;
 
                 case "Heal":
                     currentMentalHealth += card.effectValue;
                     if (currentMentalHealth > maxMentalHealth) currentMentalHealth = maxMentalHealth;
-                    Debug.Log($"Healing! Mental Health bertambah {card.effectValue}. Sekarang: {currentMentalHealth}");
                     break;
 
                 case "Draw":
                     List<CardData> extraCards = deckManager.DrawCards(card.effectValue);
                     cardsInHand.AddRange(extraCards);
-                    Debug.Log($"Efek Draw! Menarik {card.effectValue} kartu tambahan ke tangan.");
                     break;
 
                 case "Stamina Buff":
                     currentStamina += card.effectValue;
-                    Debug.Log($"Efek Stamina! Stamina bertambah {card.effectValue}. Sekarang: {currentStamina}");
                     break;
             }
 
@@ -155,34 +155,41 @@ public class BattleManager : MonoBehaviour
             slotCardVisual.RefreshHandVisuals(cardsInHand);
         }
 
-        if (currentEnemyData != null && enemyRevisiText != null)
+        if (currentEnemyData != null)
         {
             if (enemyNameText != null) enemyNameText.text = currentEnemyData.enemyName;
-            enemyRevisiText.text = $"Revisi Bar: {currentEnemyRevisiBar} / {currentEnemyData.maxRevisiBar}";
+            if (enemyRevisiText != null) enemyRevisiText.text = $"Revisi Bar: {currentEnemyRevisiBar} / {currentEnemyData.maxRevisiBar}";
+            if (enemyRevisiSlider != null) enemyRevisiSlider.value = currentEnemyBarValue();
         }
 
-        if (playerMentalHealthText != null)
-        {
-            playerMentalHealthText.text = $"Mental Health: {currentMentalHealth} / {maxMentalHealth}";
-        }
+        if (playerMentalHealthText != null) playerMentalHealthText.text = $"Mental Health: {currentMentalHealth} / {maxMentalHealth}";
+        if (playerMentalSlider != null) playerMentalSlider.value = currentMentalHealth;
+        if (playerStaminaText != null) playerStaminaText.text = $"Stamina: {currentStamina} / {maxStamina}";
+    }
 
-        if (playerStaminaText != null)
+    private int currentEnemyBarValue() => currentEnemyRevisiBar < 0 ? 0 : currentEnemyRevisiBar;
+
+    private void DisplayEnemyIntent()
+    {
+        if (currentEnemyData != null && enemyIntentText != null)
         {
-            playerStaminaText.text = $"Stamina: {currentStamina} / {maxStamina}";
+            enemyIntentText.text = $"Intent: ⚔️ {currentEnemyData.baseDamage} Dmg";
         }
     }
 
     private IEnumerator ExecuteEnemyTurn()
     {
+        if (enemyIntentText != null) enemyIntentText.text = "Checking...";
         Debug.Log("Dosen/Draf Skripsi sedang memeriksa...");
         yield return new WaitForSeconds(1.5f);
 
         if (currentEnemyData != null && currentEnemyRevisiBar > 0)
         {
             currentMentalHealth -= currentEnemyData.baseDamage;
-            Debug.Log($"{currentEnemyData.enemyName} memberikan coretan! Mental Health berkurang {currentEnemyData.baseDamage}.");
+            Debug.Log($"{currentEnemyData.enemyName} memberikan coretan!");
         }
 
+        UpdateHandUI();
         if (currentMentalHealth <= 0)
         {
             ChangeState(BattleState.Lose);
