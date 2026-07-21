@@ -18,4 +18,4 @@ MonoBehaviour:
   staminaCost: 2
   cardType: 0
   effectValue: 15
-  cardArt: {fileID: 21300000, guid: 89186ea29e365ce498dc17dfbed2c022, type: 3}
+  cardArt: {fileID: 6162787097238355275, guid: 60c188d42a557254694d6208ebca70cf, type: 3}

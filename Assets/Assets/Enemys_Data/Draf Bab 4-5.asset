@@ -15,4 +15,4 @@ MonoBehaviour:
   enemyName: Draf Bab 4-5 (Analisis & Pembahasan)
   maxRevisiBar: 125
   baseDamage: 12
-  enemySprite: {fileID: 0}
+  enemySprite: {fileID: 21300000, guid: 37d09bdd0b5f5f246aa8bcdcc630b85f, type: 3}

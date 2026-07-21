@@ -15,4 +15,4 @@ MonoBehaviour:
   enemyName: Dosbing Killer (Spesialis Coretan)
   maxRevisiBar: 140
   baseDamage: 18
-  enemySprite: {fileID: 0}
+  enemySprite: {fileID: -2413159670640651756, guid: 874d81e25fffa1e458b0e7e55c12e846, type: 3}
