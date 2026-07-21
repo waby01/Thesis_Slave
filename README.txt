@@ -1,87 +1,32 @@
-﻿# 🎓 THESIS SLAVE: ACC IS A MYTH
-> **Turn-Based Card Battle Game tentang Perjuangan Mahasiswa Melawan Coretan Dosen Pembimbing**
+﻿# Thesis Slave: ACC is a Myth
 
----
+## Game Overview
+Thesis Slave is a 2D turn-based deckbuilder prototype about the comedic academic struggles of a final-year university student facing their thesis supervisor. The primary core mechanic is managing a hand of cards to reduce the supervisor's "Revision Bar" to zero while maintaining the player's "Mental Health" indicator above zero. 
 
-## Deskripsi Proyek
+The player draws cards each turn, queues actions using Stamina points, and resolves outcomes before facing the supervisor's counter-attack. The win condition is achieved by fully clearing the Revision Bar (getting ACC), while the lose condition occurs when the player's Mental Health drops to 0 (getting burnt out).
 
-**Thesis Slave** adalah game *deck-building / tactical card-battle* 2D bertema satir akademis. Pemain berperan sebagai seorang mahasiswa tingkat akhir yang berjuang menghabiskan "Bar Revisi" Dosen Pembimbing menggunakan strategi kombinasi kartu, sambil terus menjaga indikator **Mental Health** agar tidak *drop* menjadi nol.
+## How to Run
+1. Clone or download this repository.
+2. Open the project using Unity.
+3. Open the main scene located at `Assets/Scenes/MainMenu.unity`.
+4. Press **Play** in the Unity Editor or run the standalone build.
 
-Game ini dikembangkan menggunakan engine **Unity 6** dengan menerapkan arsitektur **Finite State Machine (FSM)** dan **Action Queue Execution** untuk mengelola alur permainan *turn-based* yang dinamis.
+- **Engine & version used:** Unity 6 (6000.0.75f1)
+- **Build location:** `/Build/` folder (contains `ThesisSlave.exe`)
 
----
+## Technical Decisions
+- **Finite State Machine (FSM):** Structured the core game loop in `BattleManager.cs` using states (`Start`, `PlayerTurn`, `ExecutingPlayerActions`, `EnemyTurn`, `Win`, `Lose`) to ensure clean state isolation and predictability.
+- **Action Queue System:** Card plays are queued into an execution list upon clicking, resolving sequentially during the execution state rather than instantly, enhancing game feel and turn clarity.
+- **UI Interaction Locking & Protection:** Implemented conditional interaction flags (`CanClickEndTurn` and `IsAnyPanelActive`) to lock card inputs and disable the "End Turn" button whenever turn panels, pause menus, or overlay panels are active.
+- **Singleton Audio Architecture:** Built a persistent `AudioManagers.cs` handling global sound effects and music override states across panel transitions and scene loads.
+- **ScriptableObject Data Driven:** Defined card stats and enemy intents via ScriptableObjects (`CardData`, `EnemyData`) to decouple gameplay logic from visual rendering (`SlotCard`).
 
-## Gameplay Mechanics & Flow
+## What I Would Do With More Time
+- **Card Reward & Drafting System:** Implement a reward screen between battle stages to allow players to draft new cards into their deck.
+- **Deck Customization / Card Upgrade:** Add mechanics for players to remove obsolete cards or upgrade existing ones to shape their deck synergy.
+- **Enhanced Visual Feedback:** Add card play animations, screen shakes on heavy attacks, and dynamic UI particles.
+- **Run Progression Map:** Implement a node-based map system to give players choices between different supervisors or academic events.
 
-### Alur Permainan (Turn-Based Loop)
-1. **Player Turn Phase:** 
-   * Banner `"PLAYER TURN"` muncul selama 1.5 detik.
-   * Player dibekali **Stamina** (default: 3) dan menarik 4 kartu dari Deck.
-   * Kartu yang diklik tidak langsung mengeksekusi serangan, melainkan masuk ke dalam **Antrean Aksi (Action Queue)**.
-2. **Execution Phase:** 
-   * Saat tombol **`END TURN`** ditekan, seluruh kartu dalam antrean dieksekusi satu per satu dengan jeda animasi/efek.
-3. **Enemy Turn Phase:** 
-   * Banner `"ENEMY TURN"` muncul selama 1.5 detik.
-   * Dosen Pembimbing / Draf Skripsi memberikan serangan coretan (*damage*) yang mengurangi **Mental Health** player.
-4. **Draw & Reset Phase:**
-   * Terdapat jeda 2 detik sebelum giliran baru dimulai. Stamina di-reset, dan player menarik kartu baru.
-
----
-
-## Sistem Kartu (12 Cards System)
-
-| Nama Kartu | Tipe | Cost Stamina | Efek Utama |
-| :--- | :---: | :---: | :--- |
-| **KATING** | `Draw` | 1 | Mengambil tambahan kartu dari Deck ke tangan |
-| **JURNAL ILEGAL** | `Draw` | 1 | Mengambil kartu ekstra untuk opsi serangan |
-| **KOPAG** | `Heal` | 1 | Memulihkan sebagian Mental Health player |
-| **LAPOR ORTU** | `Heal` | 2 | Pemulihan Mental Health dalam jumlah besar |
-| **GANTI JUDUL** | `Discard` | Variable | Membuang seluruh kartu di tangan & mengocok ulang (*Redraw*) |
-| **LAPORAN KAPRODI** | `Damage`| 3 | Mengurangi Bar Revisi Dosen hingga mencapai 0 (ACC) |
-| **LOGIN** | `Heal` | 1 || Memulihkan sebagian Mental Health player |
-| **MIE AYAM** | `Stamina Buff' | 1 | Memulihkan sebagian stamina player |
-| **PINJEM LAPTOP** | `Damage`| 2 | Mengurangi Bar Revisi Dosen (ACC) |
-| **REVISI** | `Damage`| 1 | Mengurangi Bar Revisi Dosen (ACC) |
-| **SKS** | `Damage`| 2 | Mengurangi Bar Revisi Dosen (ACC) |
-| **TURU** | `Stamina Buff' | 0 | Memulihkan sebagian stamina player |
-
----
-
-## Struktur & Arsitektur Script (C#)
-Assets/
-└── Scripts/
-├── BattleManager.cs      # Core Game Loop, FSM State Machine, Queue Execution
-├── AudioManagers.cs      # Singleton Audio Controller (BGM, SFX, Panel Mute Override)
-├── DeckManager.cs       # Pengelola Pengocokan Deck, Draw, Discard, & Hand Visual
-├── SlotCard.cs          # Dynamic UI Card Spawner & Rendering
-└── MuteButtonVisual.cs  # Observer Visual Listener untuk Status Mute Audio
-
-### Fitur Kunci Teknis:
-* **State Machine Pattern:** Mengelola status `Start`, `PlayerTurn`, `ExecutingPlayerActions`, `EnemyTurn`, `Win`, dan `Lose`.
-* **Action Queuing System:** Mencegah kalkulasi instan, menciptakan efek serangan berurutan (*turn-based feeling*).
-* **UI Protection & Interaction Lock:** Tombol `End Turn` dan kartu terkunci otomatis (`interactable = false`) saat panel indikator atau menu pause sedang aktif.
-* **Persistent Audio Manager:** Event-driven architecture untuk perubahan status audio yang ter-sinkronisasi lintas scene.
-
----
-
-## Kontrol Permainan
-
-| Tombol / Aksi | Fungsi |
-| :--- | :--- |
-| **Klik Kiri Mouse** | Memilih / Memainkan Kartu & Mengklik Tombol UI |
-| **`ESC` / `P`** | Membuka / Menutup Panel Pause |
-| **`E`** | Mute / Unmute Audio Global |
-
----
-
-## Petunjuk Instalasi & Menjalankan Proyek
-
-1. **Persyaratan Software:**
-   * Engine: **Unity 6 (6000.4.3f1)** atau versi yang kompatibel.
-2. **Langkah Menjalankan:**
-   * Clone/download repository ini.
-   * Buka project lewat Unity Hub.
-   * Buka Scene: `Assets/Scenes/MainMenu.unity`.
-   * Tekan tombol **Play** di Unity Editor.
-
----
+## Known Issues
+- Rapidly clicking cards during scene load transitions might occasionally cause slight UI refresh delays on low-end hardware.
+- UI layout scaling is optimized for 16:9 resolutions (1920x1080); other aspect ratios might experience minor visual padding overlaps.
